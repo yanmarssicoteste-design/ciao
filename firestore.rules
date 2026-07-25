@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════════════════════════════════════════════
+    // /stores/{uid} — 1 documento por pizzaria (multi-tenant).
+    // uid do documento == uid do dono no Firebase Auth.
+    // ═══════════════════════════════════════════════════════
+    match /stores/{storeUid} {
+
+      // Leitura pública: o cardápio precisa aparecer sem login.
+      allow read: if true;
+
+      // Criação: só o próprio usuário autenticado pode criar o documento
+      // com o seu uid, e só durante o provisionamento (dados básicos válidos).
+      allow create: if request.auth != null
+                    && request.auth.uid == storeUid
+                    && isValidStore(request.resource.data)
+                    && request.resource.data.ownerUid == storeUid;
+
+      // Atualização: só o dono, sem trocar de dono nem mexer em createdAt.
+      allow update: if request.auth != null
+                    && request.auth.uid == storeUid
+                    && isValidStore(request.resource.data)
+                    && request.resource.data.ownerUid == storeUid
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if false;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // /slugs/{slug} -> { uid } — URL amigável -> dono.
+    // ═══════════════════════════════════════════════════════
+    match /slugs/{slug} {
+      allow read: if true;
+
+      // Só cria um slug apontando pra si mesmo (feito automaticamente no
+      // cadastro/provisionamento, nunca editado à mão pelo usuário).
+      allow create: if request.auth != null
+                    && request.resource.data.keys().hasOnly(['uid'])
+                    && request.resource.data.uid == request.auth.uid;
+
+      allow update, delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // Validação de schema do documento da loja.
+    // Não valida profundamente cada item de array (Firestore Rules
+    // não tem loops), mas garante os tipos e campos essenciais —
+    // suficiente para barrar a maioria dos dados malformados/maliciosos.
+    // ─────────────────────────────────────────────────────────
+    function isValidStore(d) {
+      return d.keys().hasAll(['name', 'slug', 'ownerUid', 'categories', 'products', 'combos', 'reviews', 'features'])
+        && d.name is string && d.name.size() > 0 && d.name.size() < 120
+        && d.slug is string
+        && d.ownerUid is string
+        && d.categories is list && d.categories.size() < 60
+        && d.products is list && d.products.size() < 500
+        && d.combos is list && d.combos.size() < 100
+        && d.reviews is list && d.reviews.size() < 500
+        && d.features is map
+        && (!('fee' in d) || d.fee is number)
+        && (!('minOrder' in d) || d.minOrder is number)
+        && (!('color' in d) || d.color is string);
+    }
+  }
+}

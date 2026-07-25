@@ -1,0 +1,8 @@
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--black);padding:1.5rem;}
+.auth-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:2rem;}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:1.6rem;}
+.auth-tabs{display:flex;gap:.4rem;background:var(--admin);border-radius:8px;padding:4px;margin-bottom:1.3rem;}
+.auth-tab{flex:1;padding:9px;background:none;border:none;border-radius:6px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.auth-tab.active{background:var(--red);color:#fff;}
+.auth-form{display:flex;flex-direction:column;gap:.9rem;}
+.auth-error{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);color:#ff9a90;font-size:.78rem;padding:9px 12px;border-radius:8px;margin-bottom:1rem;}

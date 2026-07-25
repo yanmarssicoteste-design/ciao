@@ -1,0 +1,4 @@
+/* Componentes compartilhados entre admin e storefront */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:white;padding:9px 20px;border-radius:100px;font-size:.8rem;font-weight:600;z-index:1000;transition:transform .3s;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.toast.on{transform:translateX(-50%) translateY(0);}
+.toast.red{background:var(--red);}

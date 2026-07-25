@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardápio</title>
+<meta name="description" content="Peça sua pizza online, direto pelo WhatsApp.">
+</head>
+<body>
+<div id="loadingState" style="min-height:100vh;display:flex;align-items:center;justify-content:center;color:#7a6a78;font-family:sans-serif;">Carregando cardápio…</div>
+<div id="notFoundState" style="display:none;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ddd0c8;font-family:sans-serif;gap:.5rem;text-align:center;padding:2rem;">
+  <div style="font-size:3rem">🍕</div>
+  <h1 style="font-family:'Playfair Display',serif;">Cardápio não encontrado</h1>
+  <p style="color:#7a6a78;max-width:340px">Verifique se o link está correto ou entre em contato com a pizzaria.</p>
+</div>
+<div id="vMenu">
+  <div class="mu" id="muBar">🔥 Pedidos abertos por mais <span id="mcd">--:--:--</span> 🔥</div>
+  <section class="mhero">
+    <div class="mhero-bg"></div>
+    <div class="porbit" id="porbit">🍕</div>
+    <div class="mhc">
+      <div class="mbadge">Sem taxas · Pedido direto</div>
+      <img id="mhlogo" class="mhlogo" src="" alt="Logo">
+      <h1 class="mhtitle"><span class="t1" id="mhN1">La Bella</span><span class="t2" id="mhN2">Pizza</span></h1>
+      <p class="mhtagline" id="mhTag">Feita com amor, entregue com sabor</p>
+      <div class="mdiv"><span>✦</span></div>
+      <div class="mstats">
+        <div class="mst"><span class="mi">⏱</span><span class="ml">Entrega</span><span class="mv" id="msTime">40–60 min</span></div>
+        <div class="mst"><span class="mi">🛵</span><span class="ml">Frete</span><span class="mv" id="msFee">A partir R$5</span></div>
+        <div class="mst"><span class="mi">⭐</span><span class="ml">Avaliação</span><span class="mv" id="msRating">4.9 (312)</span></div>
+        <div class="mst"><span class="mi">🕐</span><span class="ml">Hoje</span><span class="mv" id="msHours">18h–23h</span></div>
+      </div>
+      <button class="mcta" onclick="document.getElementById('mNav').scrollIntoView({behavior:'smooth'})">🍕 Ver Cardápio</button>
+    </div>
+  </section>
+  <nav class="mnav" id="mNav">
+    <div class="mnav-inner">
+      <div class="mnav-logo" id="mNavLogo">La <em>Bella</em></div>
+      <div class="mnav-cats" id="mNavCats"></div>
+      <button class="ctrig" onclick="toggleCart()">🛒<span class="cbadge" id="cbadge">0</span></button>
+    </div>
+  </nav>
+  <main class="mmain">
+    <div id="mSocial" class="sp-banner fi-anim">
+      <div class="sp-avatars" id="spAvatars"></div>
+      <div class="sp-txt"><strong id="spTxt">12 pessoas viram esse cardápio hoje</strong><span id="spSub">Última venda há 8 minutos</span></div>
+      <div class="sp-live"><div class="sp-dot"></div>Ao vivo</div>
+    </div>
+    <div id="mPromo" class="mpromo fi-anim"><div class="mpt"><strong id="mPromoTxt">🔥 Promoção!</strong></div><div class="mppill" id="mPromoTag">SÓ HOJE</div></div>
+    <div id="mCombosSection" class="combos-sec fi-anim">
+      <div class="msec-head"><h2 class="msec-title">🎁 <em>Combos</em> Especiais</h2><span class="msec-count" id="combosCount"></span></div>
+      <div class="combos-scroll" id="combosScroll"></div>
+    </div>
+    <div id="mMinBar" class="mbar fi-anim">
+      <div class="mbar-top"><span id="minLbl">Pedido mínimo: R$ 30</span><span id="minVal">R$ 0 / R$ 30</span></div>
+      <div class="pt"><div class="pf" id="pFill" style="width:0%"></div></div>
+    </div>
+    <div id="mSections"></div>
+    <div id="mReviewsSec" class="reviews-sec fi-anim">
+      <div class="reviews-header">
+        <div class="reviews-avg">
+          <span class="reviews-score" id="rvScore">4.9</span>
+          <div><div class="reviews-stars-big">⭐⭐⭐⭐⭐</div><div class="reviews-total" id="rvTotal">312 avaliações</div></div>
+        </div>
+      </div>
+      <div class="reviews-grid" id="rvGrid"></div>
+    </div>
+  </main>
+
+  <!-- ITEM MODAL -->
+  <div class="imbg" id="imbg" onclick="closeIM(event)">
+    <div class="imbox">
+      <div class="imimg" id="imImgWrap">
+        <img id="imImg" src="" alt="" style="display:none">
+        <div class="imnoimg" id="imNoImg">🍕</div>
+        <div class="imimg-ov"></div>
+        <button class="imclose" onclick="closeIMDirect()">✕</button>
+      </div>
+      <div class="imbody">
+        <div class="im-cat" id="imCat"></div>
+        <div class="im-name" id="imName"></div>
+        <div class="im-social" id="imSocial"><div class="dot"></div><span id="imSocialTxt"></span></div>
+        <div class="im-desc" id="imDesc"></div>
+        <div class="im-lbl">Escolha o tamanho</div>
+        <div class="im-sizes" id="imSizes"></div>
+      </div>
+      <div class="imft">
+        <div class="im-total" id="imTotal">R$ 0</div>
+        <button class="im-add" onclick="addFromIM()">+ Adicionar ao pedido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART -->
+  <div class="cov" id="cov" onclick="toggleCart()"></div>
+  <div class="cdr" id="cdr">
+    <div class="chd"><div class="chd-t">🛒 Seu Pedido</div><button class="cx" onclick="toggleCart()">✕</button></div>
+    <div class="cbody" id="cbody"><div class="cempty"><span>🍕</span><p>Carrinho vazio.<br>Escolha uma pizza!</p></div></div>
+    <div class="cft" id="cft" style="display:none">
+      <div id="upsellWrap"></div>
+      <div class="crow2"><span>Subtotal</span><span id="cSub">R$ 0,00</span></div>
+      <div class="crow2"><span>Taxa de entrega</span><span id="cFee">R$ 5,00</span></div>
+      <div class="cttl"><span>Total</span><span id="cTtl">R$ 0,00</span></div>
+      <div class="mwarn" id="cWarn" style="display:none">⚠️ Pedido mínimo R$<span id="cWarnMin">30</span>. Faltam R$<span id="cWarnDiff">30</span></div>
+      <input class="fi2" type="text" id="cName" placeholder="Seu nome">
+      <input class="fi2" type="text" id="cAddr" placeholder="Endereço de entrega">
+      <button class="obtn" onclick="checkout()">Fazer Pedido 🍕</button>
+    </div>
+  </div>
+
+  <footer class="mfoot">
+    <div class="mfl" id="mFootName">La <em>Bella</em> Pizza</div>
+    <div class="mfi2" id="mFootAddr">Rua das Flores, 123 — Centro</div>
+    <div class="mfi2" id="mFootPhone">📞 (13) 99999-9999</div>
+    <div class="mpow">Powered by Pizzaria Cheia ✦</div>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+<script type="module" src="/src/storefront/storefront.js"></script>
+</body>
+</html>

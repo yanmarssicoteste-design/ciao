@@ -1,0 +1,10 @@
+:root{
+  --black:#07050A;--deep:#0f0c14;--card:#171320;--card2:#1e1828;
+  --red:#c0392b;--red2:#e74c3c;--redglow:rgba(192,57,43,.3);
+  --gold:#d4a043;--goldf:rgba(212,160,67,.13);--goldhi:rgba(212,160,67,.5);
+  --cream:#f2e8d8;--text:#ddd0c8;--muted:#7a6a78;
+  --border:rgba(212,160,67,.16);--bordehi:rgba(212,160,67,.45);
+  --green:#27ae60;--greenf:rgba(39,174,96,.15);
+  --blue:#2980b9;--orange:#e67e22;
+  --admin:#0d0b18;
+}

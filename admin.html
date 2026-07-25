@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin — Pizzaria Cheia</title>
+</head>
+<body>
+<div id="authGate" style="min-height:100vh;display:flex;align-items:center;justify-content:center;color:#7a6a78;font-family:sans-serif;">Carregando painel…</div>
+<div id="vAdmin" style="display:none">
+<div class="aw">
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-mark"><div class="sb-icon">🍕</div><div class="sb-name">Pizzaria <em>Cheia</em></div></div>
+    <div class="sb-sub">Painel Admin</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Cardápio</div>
+    <button class="sb-btn active" onclick="showTab('produtos',this)"><span class="ico">🍕</span>Produtos</button>
+    <button class="sb-btn" onclick="showTab('categorias',this)"><span class="ico">📂</span>Categorias</button>
+    <button class="sb-btn" onclick="showTab('combos',this)"><span class="ico">🎁</span>Combos</button>
+    <button class="sb-btn" onclick="showTab('avaliacoes',this)"><span class="ico">⭐</span>Avaliações</button>
+    <div class="sb-sec">Divulgação</div>
+    <button class="sb-btn" onclick="showTab('divulgacao',this)"><span class="ico">🖼️</span>Gerar Pôster</button>
+    <div class="sb-sec">Configuração</div>
+    <button class="sb-btn" onclick="showTab('loja',this)"><span class="ico">🏪</span>Loja</button>
+    <button class="sb-btn" onclick="showTab('aparencia',this)"><span class="ico">🎨</span>Aparência</button>
+    <button class="sb-btn" onclick="showTab('config',this)"><span class="ico">⚙️</span>Configurações</button>
+  </nav>
+  <a class="sb-prev" id="liveMenuLink" href="#" target="_blank" rel="noopener" style="text-decoration:none">👁 Ver Cardápio ao Vivo</a>
+  <div style="padding:0 1rem 1rem;font-size:.65rem;color:var(--muted);word-break:break-all;" id="liveMenuUrl"></div>
+  <button class="sb-btn" id="logoutBtn" style="border-top:1px solid var(--border)"><span class="ico">🚪</span>Sair</button>
+</aside>
+
+<div class="ac">
+  <!-- PRODUTOS -->
+  <div id="tp-produtos" class="tp active">
+    <div class="ah"><div><div class="at">Produtos</div><div class="as">Gerencie os itens do cardápio</div></div><div class="ha"><button class="bp" onclick="openProdModal()">+ Novo Produto</button></div></div>
+    <div class="ab">
+      <div class="tbar">
+        <button class="tab active" onclick="filterCat('Todos',this)">Todos</button>
+        <button class="tab" id="cat-tab-filter" onclick="renderCatTabs()">Por Categoria</button>
+      </div>
+      <div id="catTabsExtra" style="display:none;margin-bottom:1rem;"></div>
+      <div class="pgrid" id="prodGrid"></div>
+    </div>
+  </div>
+
+  <!-- CATEGORIAS -->
+  <div id="tp-categorias" class="tp">
+    <div class="ah"><div><div class="at">Categorias</div><div class="as">Crie e organize as categorias do seu cardápio</div></div><div class="ha"><button class="bp" onclick="openCatModal()">+ Nova Categoria</button></div></div>
+    <div class="ab">
+      <div class="ic"><div class="ic-title">Categorias Ativas</div><div class="cat-list" id="catList"></div></div>
+    </div>
+  </div>
+
+  <!-- COMBOS -->
+  <div id="tp-combos" class="tp">
+    <div class="ah"><div><div class="at">Combos</div><div class="as">Crie combinações especiais com desconto</div></div><div class="ha"><button class="bp" onclick="openComboModal()">+ Novo Combo</button></div></div>
+    <div class="ab">
+      <div class="ic"><div class="ic-title">Combos Ativos</div><div class="combo-list" id="comboList"></div></div>
+    </div>
+  </div>
+
+  <!-- AVALIAÇÕES -->
+  <div id="tp-avaliacoes" class="tp">
+    <div class="ah"><div><div class="at">Avaliações</div><div class="as">Gerencie os depoimentos de clientes</div></div><div class="ha"><button class="bp" onclick="openReviewModal()">+ Nova Avaliação</button></div></div>
+    <div class="ab">
+      <div class="ic"><div class="ic-title">Depoimentos de Clientes</div><div class="review-list" id="reviewList"></div></div>
+    </div>
+  </div>
+
+  <!-- DIVULGAÇÃO / GERADOR DE PÔSTER -->
+  <div id="tp-divulgacao" class="tp">
+    <div class="ah"><div><div class="at">Gerar Pôster</div><div class="as">Monte uma arte pronta pra postar no Instagram/Facebook, usando as fotos do seu cardápio</div></div></div>
+    <div class="ab">
+      <div class="poster-wrap">
+        <div class="ic poster-controls">
+          <div class="ic-title">1. O que divulgar</div>
+          <div class="fg"><label class="lbl">Tipo</label>
+            <select class="inp" id="pgKind">
+              <option value="product">Produto</option>
+              <option value="combo">Combo</option>
+            </select>
+          </div>
+          <div class="fg"><label class="lbl">Item</label><select class="inp" id="pgItem"></select></div>
+
+          <div class="ic-title" style="margin-top:1.2rem">2. Estilo da arte</div>
+          <div class="fg"><label class="lbl">Modelo</label>
+            <select class="inp" id="pgTemplate">
+              <option value="destaque">Destaque de Produto</option>
+              <option value="promo">Promoção (chamativo)</option>
+            </select>
+          </div>
+          <div class="fg"><label class="lbl">Formato</label>
+            <select class="inp" id="pgFormat">
+              <option value="square">Quadrado (Feed) — 1080×1080</option>
+              <option value="story">Vertical (Stories) — 1080×1920</option>
+            </select>
+          </div>
+          <div class="fg" id="pgPromoTagWrap" style="display:none">
+            <label class="lbl">Texto de destaque</label>
+            <input class="inp" id="pgPromoTag" placeholder="Ex: SEXTA É DIA DE PROMO" maxlength="28">
+          </div>
+
+          <div class="ic-title" style="margin-top:1.2rem">3. Baixar</div>
+          <button class="bp" id="pgDownloadBtn" style="width:100%;justify-content:center;padding:12px">⬇️ Baixar PNG</button>
+          <p id="pgHint" style="font-size:.72rem;color:var(--muted);margin-top:.6rem;line-height:1.5">Dica: fotos que você mesmo enviou (upload) ficam melhores no pôster do que imagens de exemplo vindas de links externos.</p>
+        </div>
+        <div class="ic poster-preview-box">
+          <div class="ic-title">Pré-visualização</div>
+          <div class="poster-canvas-holder"><canvas id="pgCanvas"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOJA -->
+  <div id="tp-loja" class="tp">
+    <div class="ah"><div><div class="at">Informações da Loja</div><div class="as">Personalize como sua pizzaria aparece</div></div><div class="ha"><button class="bp" onclick="saveStore()">💾 Salvar</button></div></div>
+    <div class="ab">
+      <div class="ic"><div class="ic-title">Identidade Visual</div>
+        <div style="display:grid;grid-template-columns:170px 1fr;gap:1.4rem;align-items:start;">
+          <div><div class="lbl">Logo da Pizzaria</div>
+            <div class="lu" onclick="document.getElementById('logoInp').click()">
+              <img id="logoPrev" class="lprev" src="" style="display:none">
+              <div id="logoPh"><div class="lu-ph">🍕</div><p>Clique para<br><strong>upload da logo</strong></p></div>
+            </div>
+            <input type="file" id="logoInp" accept="image/*" style="display:none" onchange="uploadLogo(this)">
+          </div>
+          <div>
+            <div class="fg"><label class="lbl">Nome da Pizzaria</label><input class="inp" type="text" id="sName" value="La Bella Pizza"></div>
+            <div class="fg"><label class="lbl">Slogan</label><input class="inp" type="text" id="sTagline" value="Feita com amor, entregue com sabor"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ic"><div class="ic-title">Contato e Horários</div>
+        <div class="fgrid">
+          <div class="fg"><label class="lbl">Telefone</label><input class="inp" type="text" id="sPhone" value="(13) 99999-9999"></div>
+          <div class="fg"><label class="lbl">Endereço</label><input class="inp" type="text" id="sAddr" value="Rua das Flores, 123 — Centro"></div>
+          <div class="fg"><label class="lbl">Horário</label><input class="inp" type="text" id="sHours" value="18h–23h"></div>
+          <div class="fg"><label class="lbl">Fechamento (countdown)</label><input class="inp" type="time" id="sClose" value="23:00"></div>
+        </div>
+      </div>
+      <div class="ic"><div class="ic-title">Entrega</div>
+        <div class="fgrid">
+          <div class="fg"><label class="lbl">Taxa de Entrega (R$)</label><input class="inp" type="number" id="sFee" value="5" min="0"></div>
+          <div class="fg"><label class="lbl">Pedido Mínimo (R$)</label><input class="inp" type="number" id="sMin" value="30" min="0"></div>
+          <div class="fg"><label class="lbl">Tempo de Entrega</label><input class="inp" type="text" id="sTime" value="40–60 min"></div>
+          <div class="fg"><label class="lbl">Avaliação</label><input class="inp" type="text" id="sRating" value="4.9 (312)"></div>
+        </div>
+      </div>
+      <div class="ic"><div class="ic-title">Banner Promocional</div>
+        <div class="fg"><label class="lbl">Texto do Banner</label><input class="inp" type="text" id="sPromoTxt" value="🔥 Promoção de Sexta! Peça 2 pizzas grandes e ganhe borda recheada grátis"></div>
+        <div class="fg"><label class="lbl">Etiqueta</label><input class="inp" type="text" id="sPromoTag" value="SÓ HOJE"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APARÊNCIA -->
+  <div id="tp-aparencia" class="tp">
+    <div class="ah"><div><div class="at">Aparência</div><div class="as">Personalize as cores do cardápio</div></div><div class="ha"><button class="bp" onclick="saveStore()">💾 Salvar</button></div></div>
+    <div class="ab">
+      <div class="ic"><div class="ic-title">Cor Principal</div>
+        <div class="crow" id="colorPalette">
+          <div class="copt selected" style="background:#c0392b" data-color="#c0392b" onclick="selColor(this)"></div>
+          <div class="copt" style="background:#e67e22" data-color="#e67e22" onclick="selColor(this)"></div>
+          <div class="copt" style="background:#27ae60" data-color="#27ae60" onclick="selColor(this)"></div>
+          <div class="copt" style="background:#2980b9" data-color="#2980b9" onclick="selColor(this)"></div>
+          <div class="copt" style="background:#8e44ad" data-color="#8e44ad" onclick="selColor(this)"></div>
+          <div class="copt" style="background:#16a085" data-color="#16a085" onclick="selColor(this)"></div>
+          <div class="copt" style="background:#f39c12" data-color="#f39c12" onclick="selColor(this)"></div>
+        </div>
+        <div style="margin-top:1rem;"><label class="lbl">Cor personalizada</label>
+          <div class="ciw">
+            <div class="cswatch" id="cSwatch" style="background:#c0392b" onclick="document.getElementById('cPicker').click()"></div>
+            <input type="color" id="cPicker" value="#c0392b" style="display:none" onchange="applyColor(this.value)">
+            <input class="inp" type="text" id="cText" value="#c0392b" style="max-width:110px" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value))applyColor(this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="ic"><div class="ic-title">Prévia</div>
+        <div style="padding:1.5rem;border-radius:8px;text-align:center;" id="colorPrev">
+          <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:.5rem;">La Bella Pizza</div>
+          <button style="padding:9px 22px;border:none;border-radius:4px;color:white;font-weight:700;cursor:default;" id="prevBtn">Adicionar ao Pedido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div id="tp-config" class="tp">
+    <div class="ah"><div><div class="at">Configurações</div><div class="as">Ative ou desative recursos</div></div><div class="ha"><button class="bp" onclick="saveStore()">💾 Salvar</button></div></div>
+    <div class="ab">
+      <div class="ic"><div class="ic-title">Recursos do Cardápio</div>
+        <div class="trow"><div class="tinfo"><strong>Banner de Urgência</strong><span>Countdown até fechar</span></div><div class="sw on" id="sw-urgency" onclick="toggleSw(this)"></div></div>
+        <div class="trow"><div class="tinfo"><strong>Prova Social em Tempo Real</strong><span>"X pessoas vendo agora"</span></div><div class="sw on" id="sw-social" onclick="toggleSw(this)"></div></div>
+        <div class="trow"><div class="tinfo"><strong>Banner Promocional</strong><span>Exibe promoção no cardápio</span></div><div class="sw on" id="sw-promo" onclick="toggleSw(this)"></div></div>
+        <div class="trow"><div class="tinfo"><strong>Combos em Destaque</strong><span>Seção de combos no cardápio</span></div><div class="sw on" id="sw-combos" onclick="toggleSw(this)"></div></div>
+        <div class="trow"><div class="tinfo"><strong>Avaliações de Clientes</strong><span>Seção de depoimentos</span></div><div class="sw on" id="sw-reviews" onclick="toggleSw(this)"></div></div>
+        <div class="trow"><div class="tinfo"><strong>Barra de Pedido Mínimo</strong><span>Progresso até o mínimo</span></div><div class="sw on" id="sw-minbar" onclick="toggleSw(this)"></div></div>
+        <div class="trow"><div class="tinfo"><strong>Pizza Girando no Hero</strong><span>Animação decorativa</span></div><div class="sw on" id="sw-orbit" onclick="toggleSw(this)"></div></div>
+        <div class="trow"><div class="tinfo"><strong>Upsell no Carrinho</strong><span>Sugestões ao adicionar item</span></div><div class="sw on" id="sw-upsell" onclick="toggleSw(this)"></div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end ac -->
+</div><!-- end aw -->
+<!-- MODALS -->
+<!-- Product Modal -->
+<div class="mov" id="prodModal">
+  <div class="mbox">
+    <div class="mhd"><div class="mhd-title" id="pmTitle">Novo Produto</div><button class="mx" onclick="closeProdModal()">✕</button></div>
+    <div class="mbody">
+      <div class="iup" id="piup" onclick="document.getElementById('piInp').click()">
+        <img id="piPrev" src="" alt="" style="display:none">
+        <div class="iup-inner" id="piInner"><span>📷</span><p>Clique para adicionar foto</p></div>
+      </div>
+      <input type="file" id="piInp" accept="image/*" style="display:none" onchange="uploadPI(this)">
+      <br>
+      <div class="fgrid">
+        <div class="fg"><label class="lbl">Nome</label><input class="inp" id="piName" type="text" placeholder="Ex: Margherita Clássica"></div>
+        <div class="fg"><label class="lbl">Categoria</label><select class="sel" id="piCat" onchange="updatePriceFields()"></select></div>
+        <div class="fg full"><label class="lbl">Ingredientes / Descrição</label><textarea class="inp txta" id="piDesc" placeholder="Ex: Molho de tomate, mussarela, manjericão..."></textarea></div>
+      </div>
+      <div class="lbl" style="margin-bottom:.65rem" id="priceLabel">Preços por Tamanho</div>
+      <div id="priceFields"></div>
+      <div style="margin-top:.6rem;font-size:.72rem;color:var(--muted);" id="priceHint"></div>
+    </div>
+    <div class="mft"><button class="bs" onclick="closeProdModal()">Cancelar</button><button class="bp" onclick="saveProd()">💾 Salvar</button></div>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<div class="mov" id="catModal">
+  <div class="mbox" style="max-width:420px">
+    <div class="mhd"><div class="mhd-title" id="cmTitle">Nova Categoria</div><button class="mx" onclick="document.getElementById('catModal').classList.remove('on')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="fg"><label class="lbl">Nome da Categoria</label><input class="inp" id="cmName" type="text" placeholder="Ex: Pizzas Doces"></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="cmEmoji" type="text" placeholder="🍕" maxlength="2"></div>
+        <div class="fg"><label class="lbl">Tipo de Preço</label>
+          <select class="sel" id="cmType">
+            <option value="sizes">Por Tamanho (P/M/G)</option>
+            <option value="single">Preço Único</option>
+          </select>
+        </div>
+        <div class="fg"><label class="lbl">Exibição no Cardápio</label>
+          <select class="sel" id="cmDisplay">
+            <option value="grid">Grid de Cards</option>
+            <option value="list">Lista</option>
+            <option value="featured">Destaque + Grid</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="mft"><button class="bs" onclick="document.getElementById('catModal').classList.remove('on')">Cancelar</button><button class="bp" onclick="saveCat()">💾 Salvar</button></div>
+  </div>
+</div>
+
+<!-- Combo Modal -->
+<div class="mov" id="comboModal">
+  <div class="mbox">
+    <div class="mhd"><div class="mhd-title" id="coTitle">Novo Combo</div><button class="mx" onclick="document.getElementById('comboModal').classList.remove('on')">✕</button></div>
+    <div class="mbody">
+      <div class="iup" id="coiup" onclick="document.getElementById('coiInp').click()" style="margin-bottom:1rem">
+        <img id="coiPrev" src="" alt="" style="display:none">
+        <div class="iup-inner" id="coiInner"><span>📷</span><p>Foto do combo (opcional)</p></div>
+      </div>
+      <input type="file" id="coiInp" accept="image/*" style="display:none" onchange="uploadCoI(this)">
+      <div class="fgrid">
+        <div class="fg"><label class="lbl">Nome do Combo</label><input class="inp" id="coName" type="text" placeholder="Ex: Combo Família"></div>
+        <div class="fg"><label class="lbl">Preço do Combo (R$)</label><input class="inp" id="coPrice" type="number" placeholder="0" min="0"></div>
+        <div class="fg full"><label class="lbl">Descrição dos Itens</label><textarea class="inp txta" id="coItems" placeholder="Ex: 1 Pizza Grande + 2 Refrigerantes + 1 Borda Recheada"></textarea></div>
+        <div class="fg"><label class="lbl">Preço Original (para mostrar desconto)</label><input class="inp" id="coOrigPrice" type="number" placeholder="0" min="0"></div>
+        <div class="fg"><label class="lbl">Economia (ex: Economize R$15)</label><input class="inp" id="coSaving" type="text" placeholder="Economize R$ 15"></div>
+      </div>
+    </div>
+    <div class="mft"><button class="bs" onclick="document.getElementById('comboModal').classList.remove('on')">Cancelar</button><button class="bp" onclick="saveCombo()">💾 Salvar</button></div>
+  </div>
+</div>
+
+<!-- Review Modal -->
+<div class="mov" id="reviewModal">
+  <div class="mbox" style="max-width:460px">
+    <div class="mhd"><div class="mhd-title">Nova Avaliação</div><button class="mx" onclick="document.getElementById('reviewModal').classList.remove('on')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="fg"><label class="lbl">Nome do Cliente</label><input class="inp" id="rvName" type="text" placeholder="Ex: João Silva"></div>
+        <div class="fg"><label class="lbl">Nota</label>
+          <select class="sel" id="rvStars">
+            <option value="5">⭐⭐⭐⭐⭐ 5 estrelas</option>
+            <option value="4">⭐⭐⭐⭐ 4 estrelas</option>
+            <option value="3">⭐⭐⭐ 3 estrelas</option>
+          </select>
+        </div>
+        <div class="fg full"><label class="lbl">Depoimento</label><textarea class="inp txta" id="rvText" placeholder="Ex: Pizza incrível, entrega rápida e embalagem caprichada!"></textarea></div>
+        <div class="fg"><label class="lbl">Produto Avaliado</label><input class="inp" id="rvProduct" type="text" placeholder="Ex: Margherita Grande"></div>
+        <div class="fg"><label class="lbl">Data</label><input class="inp" id="rvDate" type="text" placeholder="Ex: há 2 dias"></div>
+      </div>
+    </div>
+    <div class="mft"><button class="bs" onclick="document.getElementById('reviewModal').classList.remove('on')">Cancelar</button><button class="bp" onclick="saveReview()">💾 Salvar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+<script type="module" src="/src/admin/admin.js"></script>
+</body>
+</html>

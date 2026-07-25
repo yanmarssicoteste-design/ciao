@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar — Pizzaria Cheia</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="sb-icon" style="width:36px;height:36px;font-size:1.1rem;">🍕</div>
+      <div>
+        <div class="sb-name" style="font-size:1.15rem">Pizzaria <em>Cheia</em></div>
+        <div class="sb-sub">Painel do lojista</div>
+      </div>
+    </div>
+
+    <div class="auth-tabs">
+      <button id="tabLogin" class="auth-tab active" type="button">Entrar</button>
+      <button id="tabSignup" class="auth-tab" type="button">Criar conta grátis</button>
+    </div>
+
+    <div id="authError" class="auth-error" style="display:none"></div>
+
+    <form id="formLogin" class="auth-form">
+      <div class="fg"><label class="lbl">E-mail</label><input class="inp" id="loginEmail" type="email" required autocomplete="email"></div>
+      <div class="fg"><label class="lbl">Senha</label><input class="inp" id="loginPassword" type="password" required autocomplete="current-password"></div>
+      <button class="bp" type="submit" style="justify-content:center;padding:12px">Entrar</button>
+    </form>
+
+    <form id="formSignup" class="auth-form" style="display:none">
+      <div class="fg"><label class="lbl">Nome da pizzaria</label><input class="inp" id="signupStoreName" type="text" placeholder="Ex: La Bella Pizza" required></div>
+      <div class="fg"><label class="lbl">WhatsApp (com DDD)</label><input class="inp" id="signupPhone" type="text" placeholder="(13) 99999-9999"></div>
+      <div class="fg"><label class="lbl">E-mail</label><input class="inp" id="signupEmail" type="email" required autocomplete="email"></div>
+      <div class="fg"><label class="lbl">Senha</label><input class="inp" id="signupPassword" type="password" required minlength="6" autocomplete="new-password"></div>
+      <button class="bp" type="submit" style="justify-content:center;padding:12px">Criar minha pizzaria online</button>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="/src/auth/auth.js"></script>
+</body>
+</html>
